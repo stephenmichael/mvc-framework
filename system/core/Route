@@ -10,7 +10,6 @@
 
 class Route
 {
-
 	/**
 	 * FUNCTION: addRoute
 	 * @param string $RouteName         The name of the route
@@ -40,3 +39,4 @@ class Route
 	
 }
 
+/** eof */
