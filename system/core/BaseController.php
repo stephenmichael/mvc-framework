@@ -3,37 +3,37 @@
 /**
  * BaseController
  *
- * @author      Stephen Michael <info@stephenmichael.net>
- * @copyright   Copyright (C), 2015 Stephen Michael
- * @version     1.0
+ * @author     Stephen Michael <info@stephenmichael.net>
+ * @copyright  Copyright (C), 2014 Stephen Michael
+ * @version    1.0
  */
 
-class BaseController
+abstract class BaseController
 {
-    protected $_view;
+    public $view;
 	
     /**
      * __construct
      */
-     public function __construct() 
-     {
-         $this->_view = new View();
-     }
-	
+    public function __construct() 
+    {
+        $this->view = new View();
+    }
+    
     // ------------------------------------------------------------------------
 	
     /**
      * loadModel - Loads a Model
-     *
+     * 
      * @param string $modelName - The name of the Model
      * @param string $area - The Area where the Model is located
      * @return \app\$area\models
      */
     public function loadModel($modelName, $area = false)
     {
-    	// Create the modelPath
-    	$modelPath = 'app/';
-	
+        // Create the modelPath
+	$modelPath = 'app/';
+		
 	// Check if an Area has been defined
 	if ($area)
 	{
@@ -54,8 +54,8 @@ class BaseController
 	    return new $modelName();
 	}
     }
-
+    
     // ------------------------------------------------------------------------
-	
+    
 }
 /** eof */
