@@ -15,25 +15,25 @@ spl_autoload_register('AppAutoloader::helperLoader');
 class AppAutoloader
 {
     /**
-	   * Load Core Library Classes
+     * Load Core Library Classes
      */
     public static function coreLoader($class)
     {
-		    $filename = "system/core/" . $class . ".php";
-		    if(file_exists($filename))
-		    {
-			      require $filename;
-		    }
+        $filename = "system/core/" . $class . ".php";
+        if(file_exists($filename))
+        {
+	    require $filename;
+	}
     }
 
     /**
-	   * Load Helper Library Classes
+     * Load Helper Library Classes
      */
     public static function helperLoader($class)
     {
-		    $filename = "system/helpers/" . $class. ".php";
-		    if(file_exists($filename))
-		    {
+        $filename = "system/helpers/" . $class. ".php";
+        if(file_exists($filename))
+        {
             require $filename;
         }
     }
