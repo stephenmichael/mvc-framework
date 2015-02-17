@@ -148,5 +148,3 @@ define('SITE_EMAIL', 'info@thewebsite.com');
  */
  
 date_default_timezone_set('Europe/London');
-
-?>
