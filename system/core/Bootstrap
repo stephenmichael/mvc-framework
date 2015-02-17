@@ -40,117 +40,117 @@ class Bootstrap
     /** @var null The Parameter 3 */
     private $_parameter3 = null;
 	
-	  function __construct()
-	  {
-	      //start sessions
-	      Session::init();
-	      
-	      /**
-           * Check the ENVIRONMENT for offline mode
-		   * Show Holding Page
-		   */
-            if (ENVIRONMENT == 'offline')
+	function __construct()
+	{
+		//start sessions
+		Session::init();
+        
+        /**
+         * Check the ENVIRONMENT for offline mode
+         * Show Holding Page
+         */
+        if (ENVIRONMENT == 'offline')
+        {
+            $this->_HoldingPage();
+             return false;
+        }
+		
+        // Sets the protected $_url
+        $this->_GetUrl();
+		
+		// If URL is empty Load Default Controller
+        if (empty($this->_url[0]))
+        {
+            $this->_LoadDefaultController();
+            return false;
+        }
+		
+		// Check for an area
+		$areaPath ='app/areas/' . $this->_urlForController[0];
+		
+		if (file_exists($areaPath))
+		{
+            // Load the Area Registration File
+            require_once('app/areas/' . $this->_urlForController[0] . '/' . $this->_urlForController[0] . 'AreaRegistration.php');
+            
+            // Set the Area Name
+			$this->_areaName = $this->_urlForController[0];
+			
+			// Set the theArea by appending it with 'Area'
+			$theArea = $this->_areaName.'Area';
+			
+            // Instantiate the Area
+            $this->_area = new $theArea();
+			
+            // if the action exists
+            if (method_exists($this->_area, 'registerArea'))
             {
-                $this->_HoldingPage();
-                return false;
+                // Load the action
+				$areaDetails = $this->_area->{'registerArea'}();
+				// Get the Default Area Controller
+				$areaController = $areaDetails['areaController'];
+				// Get the Default Area Action
+				$areaAction = $areaDetails['areaAction'];
             }
-		
-            // Sets the protected $_url
-            $this->_GetUrl();
-		
-		    // If URL is empty Load Default Controller
-            if (empty($this->_url[0]))
+            else
             {
-                $this->_LoadDefaultController();
-                return false;
+                $this->_Error();
             }
-		
-		    // Check for an area
-		    $areaPath ='app/areas/' . $this->_urlForController[0];
-		
-		    if (file_exists($areaPath))
-		    {
-		        // Load the Area Registration File
-		        require_once('app/areas/' . $this->_urlForController[0] . '/' . $this->_urlForController[0] . 'AreaRegistration.php');
-			
-			    // Set the Area Name
-			    $this->_areaName = $this->_urlForController[0];
-			
-			    // Set the theArea by appending it with 'Area'
-			    $theArea = $this->_areaName.'Area';
-			
-                // Instantiate the Area
-                $this->_area = new $theArea();
-			
-	            // if the action exists
-	            if (method_exists($this->_area, 'registerArea'))
-	            {
-			        // Load the action
-				    $areaDetails = $this->_area->{'registerArea'}();
-				    // Get the Default Area Controller
-				    $areaController = $areaDetails['areaController'];
-				    // Get the Default Area Action
-				    $areaAction = $areaDetails['areaAction'];
-			    }
-			    else
-			    {
-				    $this->_Error();
-		        }
 				
-			    // Set the Controller Name
-			    $this->_controllerName = (empty($this->_urlForController[1]) ? $areaController : $this->_urlForController[1]);
-				
-		        // Set File path to Controller
-		        $controllerPath = 'app/areas/' . $this->_areaName .'/controllers/' . $this->_controllerName . 'Controller.php';
-				
-		        // Set the Action Name and remove hyphens
-		        $this->_actionName = (empty($this->_url[2]) ? $areaAction : str_replace('-', '', $this->_url[2]));
-			
-		        // Get Parameters
-		        $this->_parameter1 = (empty($this->_url[3]) ? false : $this->_url[3]);
-		        $this->_parameter2 = (empty($this->_url[4]) ? false : $this->_url[4]);
-		        $this->_parameter3 = (empty($this->_url[5]) ? false : $this->_url[5]);
-		    }
-		    else
-		    {
-		        // Get the Controller Name
-			      $this->_controllerName = $this->_urlForController[0];
-			
-		        // Set File path to Controller
-		        $controllerPath = 'app/controllers/' . $this->_controllerName . 'Controller.php';
-			
-		        // Get the Action Name and remove hyphens
-		        $this->_actionName = (empty($this->_url[1]) ? 'index' : str_replace('-', '', $this->_url[1]));
-			
-		        // Get Parameters
-			      $this->_parameter1 = (empty($this->_url[2]) ? false : $this->_url[2]);
-			      $this->_parameter2 = (empty($this->_url[3]) ? false : $this->_url[3]);
-			      $this->_parameter3 = (empty($this->_url[4]) ? false : $this->_url[4]);
-		      }
-		
-		      // If the file exists
-		      if (file_exists($controllerPath))
-	        {			
-			        // Require the Controller
-			        require_once ($controllerPath);
-			
-		          // Set the Controller Name by appending it with 'Controller'
+            // Set the Controller Name
+            $this->_controllerName = (empty($this->_urlForController[1]) ? $areaController : $this->_urlForController[1]);
+            
+            // Set File path to Controller
+            $controllerPath = 'app/areas/' . $this->_areaName .'/controllers/' . $this->_controllerName . 'Controller.php';
+            
+            // Set the Action Name and remove hyphens
+            $this->_actionName = (empty($this->_url[2]) ? $areaAction : str_replace('-', '', $this->_url[2]));
+            
+            // Get Parameters
+            $this->_parameter1 = (empty($this->_url[3]) ? false : $this->_url[3]);
+            $this->_parameter2 = (empty($this->_url[4]) ? false : $this->_url[4]);
+            $this->_parameter3 = (empty($this->_url[5]) ? false : $this->_url[5]);
+        }
+        else
+        {
+            // Get the Controller Name
+            $this->_controllerName = $this->_urlForController[0];
+            
+            // Set File path to Controller
+            $controllerPath = 'app/controllers/' . $this->_controllerName . 'Controller.php';
+            
+            // Get the Action Name and remove hyphens
+            $this->_actionName = (empty($this->_url[1]) ? 'index' : str_replace('-', '', $this->_url[1]));
+            
+            // Get Parameters
+            $this->_parameter1 = (empty($this->_url[2]) ? false : $this->_url[2]);
+            $this->_parameter2 = (empty($this->_url[3]) ? false : $this->_url[3]);
+            $this->_parameter3 = (empty($this->_url[4]) ? false : $this->_url[4]);
+        }
+            
+        // If the file exists
+        if (file_exists($controllerPath))
+        {			
+            // Require the Controller
+            require_once ($controllerPath);
+            
+            // Set the Controller Name by appending it with 'Controller'
 			$theController = $this->_controllerName.'Controller';
-			
+            
 			// Instantiate the Controller
 			$this->_controller = new $theController();
-			
+            
 			// if the action exists within the controller
 			if (method_exists($this->_controller, $this->_actionName))
 			{
 				// Load the action and pass through parameters
-			    $this->_controller->{$this->_actionName}($this->_parameter1,$this->_parameter2,$this->_parameter3);
+                $this->_controller->{$this->_actionName}($this->_parameter1,$this->_parameter2,$this->_parameter3);
 			}
 			elseif (file_exists('app/app_start/routeConfig.php'))
 			{
 				// Load Route File
 				require_once('app/app_start/routeConfig.php');
-				
+                
 				// Set match
 				$match = false;
 				
@@ -160,21 +160,21 @@ class Bootstrap
 					{						
 						// Set Match
 						$match = true;
-						
+                        
 						// Check for an area
 						$areaPath ='app/areas/' . $value->routeArea;
-						
+                      
 						if (file_exists($areaPath))
 						{							
 							// Set the Area Name
 							$this->_areaName = $value->routeArea;
-								
+                            
 							// Set the Controller Name
 							$this->_controllerName = $value->routeController;
-								
+                        
 							// Set File path to Controller
-							$controllerPath = 'app/areas/' . $this->_areaName .'/controllers/' . $this->_controllerName . 'Controller.php';
-								
+                            $controllerPath = 'app/areas/' . $this->_areaName .'/controllers/' . $this->_controllerName . 'Controller.php';
+
 							// Set the Action Name
 							$this->_actionName = $value->routeAction;
 							
@@ -211,13 +211,13 @@ class Bootstrap
 						{
 							// Require the Controller
 							require_once ($controllerPath);
-				
+                            
 							// Set the Controller Name by appending it with 'Controller'
 							$theController = $this->_controllerName.'Controller';
-				
+                            
 							// Instantiate the Controller
 							$this->_controller = new $theController();
-				
+                            
 							// if the action exists within the controller
 							if (method_exists($this->_controller, $this->_actionName))
 							{
@@ -247,7 +247,7 @@ class Bootstrap
 			$this->_Error();
 		}
     }
-	
+
 	// ------------------------------------------------------------------------
 
 
@@ -298,16 +298,16 @@ class Bootstrap
 		
 		// Instantiate the Controller
 		$this->_controller = new HoldingController();
-
+        
 		// Call the Method
 		$this->_controller->index();
 		
 		// End the function
 		return false;
 	}
-	
+        
 	// ------------------------------------------------------------------------
-		
+
 	
     /**
 	 * _LoadDefaultController
@@ -326,10 +326,10 @@ class Bootstrap
 		else
 		{
 			// Require the Controller
-		    require 'app/controllers/homeController.php';
+            require 'app/controllers/homeController.php';
 			
 			// Instantiate the Controller	
-		    $this->_controller = new HomeController();
+            $this->_controller = new HomeController();
 			
 			// Call the Method
 			$this->_controller->index();
@@ -340,6 +340,7 @@ class Bootstrap
 	}
 	
 	// ------------------------------------------------------------------------
+	
 	
     /**
 	 * _Error
@@ -359,6 +360,6 @@ class Bootstrap
 		return false;
 	}
 	
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 	
 }
